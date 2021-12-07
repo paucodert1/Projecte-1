@@ -95,7 +95,7 @@ public class gestorDeInventari {
         String servidor="jdbc:mysql://localhost:3306/";
         String bbdd="teclats";
         String user="root";
-        String password="root";
+        String password="Fat/3232";
         try {
             connexioBD = DriverManager.getConnection(servidor + bbdd, user, password);
             System.out.println("Connexio amb exit");
@@ -411,6 +411,9 @@ public class gestorDeInventari {
         Path origen=sistemFicheros.getPath(DIREC_PENDENTS + directoriPen.getName());
         Path desti=sistemFicheros.getPath(DIREC_PROCESSADES + directoriPen.getName());
 
+        //--------
+        //Moure Fitxers
+        //--------        
         Files.move(origen, desti, StandardCopyOption.REPLACE_EXISTING);
         System.out.println("S'ha mogut a processats el fixer: " + directoriPen.getName());
 
@@ -436,8 +439,7 @@ public class gestorDeInventari {
                 System.out.println("Canvi de proveïdor" + proveidor);
  
             }else{
-            
-                
+                       
             }
 
         }
@@ -446,6 +448,20 @@ public class gestorDeInventari {
 
     static void GeneraciodeComandes() throws SQLException, IOException{
 
+        //--------
+        //Obj Data
+        //--------
+        LocalDate date = LocalDate.now();
+
+        //--------
+        //Variables de cracio i esciptura de fitxers
+        //--------
+
+        FileWriter fw = null;
+        BufferedWriter bf = null;
+        PrintWriter escritor = null;
+     
+
         System.out.println("Generació de Comandes");
 
         System.out.println("Creeem el fitxer de comanda");
@@ -453,7 +469,7 @@ public class gestorDeInventari {
         //--------
         //Preparem Comanda SQL
         //--------
-        String consulta="SELECT * FROM producte where STOCK<150 order by CODI_PORTA";
+        String consulta="SELECT * FROM producte where STOCK<200 order by CODI_PORTA";
 
         PreparedStatement ps = connexioBD.prepareStatement(consulta);
 
@@ -462,63 +478,50 @@ public class gestorDeInventari {
         //--------
         ResultSet rs=ps.executeQuery();
 
-        //--------
-        //Obj Data
-        //--------
-        LocalDate date = LocalDate.now();
-
-        String proveidorAct="";
         
+
         if(rs.next()){
+
+            String proveidorAct=rs.getString("CODI_PORTA");
             
+            System.out.println("Canvi de proveïdor " + proveidorAct);
 
-            String proveidor=rs.getString("CODI_PORTA");
-
-            System.out.println("Canvi de proveïdor " + proveidor);
-
-            FileWriter fw = new FileWriter("files/Comandes/"+ proveidor + "_" + date +".txt",true);
-            BufferedWriter bf = new BufferedWriter(fw);
-            PrintWriter escritor = new PrintWriter(bf);
-            
-            escritor.println(COMANDA_STRING);
+            //--------
+            //Creació del fitxer
+            //--------            
+            fw = new FileWriter("files/Comandes/"+ proveidorAct + "_" + date +".txt");
+            bf = new BufferedWriter(fw);
+            escritor = new PrintWriter(bf);
 
             do{
 
+                //--------
+                //Condicional que comprova el proveïdor
+                //--------
+                if(proveidorAct!=rs.getString("CODI_PORTA")){
+
+                    proveidorAct=rs.getString("CODI_PORTA");
+                    escritor.close();
+
+                    fw = new FileWriter("files/Comandes/"+ proveidorAct + "_" + date +".txt");
+                    bf = new BufferedWriter(fw);
+                    escritor = new PrintWriter(bf);
+
+                    escritor.println(COMANDA_STRING);
+                    
+                }
+
                 escritor.println(" Codi: " + rs.getString("CODI") +"\tUnitats: "  + rs.getString("STOCK"));
-    
+
 
             }while(rs.next());
 
-            escritor.close();
-                
+                escritor.close();
+   
         }
     }
 
 }
-
-    
-
-    
-        
-
-
-
-
-
-
-        // String Update = "UPDATE teclats SET STOCK=STOCK+?";
-
-        // PreparedStatement sentenciaUpdate = connexioBD.prepareStatement(Update);
-
-        // String UpdateSel = "SELECT STOCK FROM teclats";
-
-        // PreparedStatement sentencia = connexioBD.prepareStatement(UpdateSel);
-
-
-
-
-    
-
 
 
 
