@@ -420,31 +420,31 @@ public class gestorDeInventari {
 
     }
 
-    static void GeneraciodeComandes2() throws SQLException, IOException{
+    // static void GeneraciodeComandes2() throws SQLException, IOException{
 
-        String consulta="SELECT * FROM producte where STOCK<150 order by CODI_PORTA";
+    //     String consulta="SELECT * FROM producte where STOCK<150 order by CODI_PORTA";
 
-        PreparedStatement ps = connexioBD.prepareStatement(consulta);
+    //     PreparedStatement ps = connexioBD.prepareStatement(consulta);
 
-        ResultSet rs=ps.executeQuery();
+    //     ResultSet rs=ps.executeQuery();
 
-        String proveidorAct="";
+    //     String proveidorAct="";
 
-        while(rs.next()){
-            String proveidor=rs.getString("CODI_PORTA");
+    //     while(rs.next()){
+    //         String proveidor=rs.getString("CODI_PORTA");
 
 
-            if(!proveidorAct.equals(proveidor)){
+    //         if(!proveidorAct.equals(proveidor)){
 
-                System.out.println("Canvi de proveïdor" + proveidor);
+    //             System.out.println("Canvi de proveïdor" + proveidor);
  
-            }else{
+    //         }else{
                        
-            }
+    //         }
 
-        }
+    //     }
 
-    }
+    // }
 
     static void GeneraciodeComandes() throws SQLException, IOException{
 
@@ -483,8 +483,8 @@ public class gestorDeInventari {
         if(rs.next()){
 
             String proveidorAct=rs.getString("CODI_PORTA");
+      
             
-            System.out.println("Canvi de proveïdor " + proveidorAct);
 
             //--------
             //Creació del fitxer
@@ -494,7 +494,7 @@ public class gestorDeInventari {
             escritor = new PrintWriter(bf);
 
             do{
-
+                
                 //--------
                 //Condicional que comprova el proveïdor
                 //--------
@@ -502,6 +502,9 @@ public class gestorDeInventari {
 
                     proveidorAct=rs.getString("CODI_PORTA");
                     escritor.close();
+
+                    
+                    
 
                     fw = new FileWriter("files/Comandes/"+ proveidorAct + "_" + date +".txt");
                     bf = new BufferedWriter(fw);
@@ -513,6 +516,7 @@ public class gestorDeInventari {
 
                 escritor.println(" Codi: " + rs.getString("CODI") +"\tUnitats: "  + rs.getString("STOCK"));
 
+                System.out.println("Comanda creada correctament");
 
             }while(rs.next());
 
