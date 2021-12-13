@@ -1,0 +1,178 @@
+*{
+    margin: 0;
+    padding: 0;
+
+}
+/*-------------------*/
+/*Todo*/
+/*-------------------*/
+.all{
+    height: 100%;
+
+    background-color: rgb(245,245,245);
+
+
+}
+
+/*-------------------*/
+/*NAV*/
+/*-------------------*/
+
+nav{  
+}
+    ul{
+        height: 100px;
+
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        list-style: none;
+        background-color: black; 
+
+    }
+
+        li a{
+            padding: 20px 0px 20px 40px;
+
+            font-size: 30px;
+            font-family: Arial, Helvetica, sans-serif;
+
+            color: white;
+            text-decoration: none;       
+
+        }
+
+        li p{
+            padding: 20px;
+
+            font-size: 50px;
+            font-family: Arial, Helvetica, sans-serif;
+
+            color: white;
+            text-decoration: none;       
+
+        }
+
+        li img{
+            width: 70px;
+            height: 70px;
+
+
+            padding: 10px 25px;
+        }
+
+/*-------------------*/
+/* Menu vertical (W3S)*/
+/*-------------------*/
+    .VMenu {
+        height: 100%; /* 100% Full-height */
+        width: 0; /* 0 width - change this with JavaScript */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Stay on top */
+        top: 0;
+        left: 0;
+        background-color: black; /* Black*/
+        overflow-x: hidden; /* Disable horizontal scroll */
+        padding-top: 60px; /* Place content 60px from the top */
+        transition: 0.5s; /*0.5 second transition effect to slide in the sidebar */
+    }
+        /*---------------------*/
+        /* Menu Vertical Links */
+        /*---------------------*/
+        .VMenu a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 25px;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #818181;
+            background-color: black;
+            display: block;
+            transition: 0.3s;
+        }
+        
+        /* When you mouse over the navigation links, change their color */
+        .VMenu a:hover {
+            color: #f1f1f1;
+        }
+        
+        /* Position and style the close button (top right corner) */
+        .VMenu .TancarV {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+            background-color: black; 
+
+        }
+    /*-------------------------------*/
+    /* Boto d'obrir el nav veritical */
+    /*-------------------------------*/
+    .ObrirV {
+        font-size: 20px;
+        cursor: pointer;
+        background-color: #111;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+    }
+    
+        .ObrirV:hover {
+            background-color: #444;
+        }
+    
+        /* Style page content - use this if you want to push the page content to the right when you open the side navigation */
+        #BMenu {
+            transition: margin-left .5s; /* If you want a transition effect */
+            padding: 20px;
+        }
+    
+    /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+    @media screen and (max-height: 450px) {
+        .VMenu {padding-top: 15px;}
+        .VMenu a {font-size: 18px;}
+    }
+
+/*-------------------*/
+/*Main*/
+/*-------------------*/
+
+    .lineT{
+
+        height: 20px;
+        border-top: #111 solid 5px;
+        background-color: rgb(18,18,18);;
+    }
+
+    .imgs{
+        display: flex;
+        justify-content: space-evenly;
+        align-content: center;
+    }
+    
+    .imgs img{
+        width: 700px;
+        height: 350px;
+
+        
+    }
+
+    .lineB{
+
+        height: 20px;
+        border-bottom: #111 solid 5px;
+        background-color: rgb(18,18,18);
+    }
+    
+
+/*-------------------*/
+/*Footer*/
+/*-------------------*/
+footer{
+    height: 1vh;
+    background-color: black;
+
+}
+
