@@ -6,36 +6,45 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.Buffer;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.security.AuthProvider;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Scanner;
+
 
 public class gestorDeInventari {
 
     // Variable globals
 
+    //Conexio
+
    public static Connection connexioBD=null;
 
-    String[] proveidors = new String[60];
-    int[] quantitatProd = new int [60];
+   //Array Analisis Comandes
 
-    // Array analisis comandes
+   public static String[] Aproveidors= new String[25];
 
-    public static String[] Aproveidors = new String[100];
-    public static int[] Aunitats = new int[100];
+   public static int[] Aproduct= new int[25];
+   
 
-    // Constant
+    String[] proveidors = new String[30];
+    int[] quantitatProd = new int [30];
 
-    static final String DIREC_PENDENTS = "Projecte 1/files/Entrades_Pendents/";
-    static final String DIREC_PROCESSADES = "Projecte 1/files/Entrades_Processades/";
-    static final String COMANDA_STRING="#############-Comanda-############# \n Empresa Imaginaria KS 123 \n Telefon: +927177858 \n ____________________________________";
+    //Constants
+
+    static final String DIREC_PENDENTS ="files/Entrades_Pendents/";
+    static final String DIREC_PROCESSADES ="files/Entrades_Processades/";
+
+    static final String COMANDA_STRING ="#############-Comanda-#############\n Empresa Imaginaria KS 123 \n Teléfon: +92717837167 \n __________________________________";
+
 
     
 
@@ -76,13 +85,13 @@ public class gestorDeInventari {
             break;
 
             case 3:
-                GeneracioDeComandesV2();
+                GeneraciodeComandes();
             break;
-    
+
             case 4:
                 AnalisisComandes();
             break;
-
+    
             case 5:
             sortir=true;
             break;
@@ -101,9 +110,9 @@ public class gestorDeInventari {
     public static void connexioBD(){
 
         String servidor="jdbc:mysql://localhost:3306/";
-        String bbdd="teclats";
+        String bbdd="TECLATS";
         String user="root";
-        String password="Fat/3232";
+        String password="root";
         try {
             connexioBD = DriverManager.getConnection(servidor + bbdd, user, password);
             System.out.println("Connexio amb exit");
@@ -157,6 +166,7 @@ public class gestorDeInventari {
             default:
             System.out.println("Opcio no valida");
             }
+            
 
     }
 
@@ -342,197 +352,241 @@ public class gestorDeInventari {
         
     }
 
+
     static void ActualitzacioStock() throws SQLException, IOException{
 
-        System.out.println("ACTUALITZACIO DE STOCK");
+        System.out.println("Actualització Stock");
 
-        File directoriPen = new File(DIREC_PENDENTS);
+        File directoriPen= new File(DIREC_PENDENTS);
         File directoriPro= new File(DIREC_PROCESSADES);
 
-        if (directoriPen.isDirectory()){
+        if(directoriPen.isDirectory()){
 
             File[] fitxers = directoriPen.listFiles();
 
             for(int i=0;i<fitxers.length;i++){
-                
+
                 UpdateStock(fitxers[i]);
-                MoureProcessades(fitxers[i], directoriPro, directoriPen);
+                Moureaprocessades(fitxers[i]);
+
             }
+
         }
 
     }
 
     static void UpdateStock(File directoriPen) throws SQLException, IOException{
 
-        FileReader reader = new FileReader(directoriPen);
+    
+        FileReader reader =new FileReader(directoriPen);
 
-            BufferedReader buffer=new BufferedReader(reader);
+            BufferedReader buffer =new BufferedReader(reader);
 
             String linia;
-            while((linia=buffer.readLine()) != null){
+
+
+            while((linia=buffer.readLine()) !=null){
+                
 
                 int Sep=linia.indexOf(":");
 
-                int numero_prod = Integer.parseInt(linia.substring(0,Sep)); 
-                System.out.println("El codi producte es: " + numero_prod);
+                int numero_prod = Integer.parseInt(linia.substring(0,Sep));
 
-                String unitats_prod = linia.substring(Sep + 1);
-                System.out.println("El numero de unitats es: " + unitats_prod);
-                
+                System.out.println("El codi producte es el: " + numero_prod);
+    
+                String unitats_prod =linia.substring(Sep+1);
+
+                System.out.println("Les unitats que ens arriben son: " + unitats_prod + " unitats");
+
+                //--------
+                //Comanda Update SQL
+                //--------
                 String Update = "UPDATE producte SET STOCK=STOCK+? WHERE CODI=?";
+
                 PreparedStatement sentencia = connexioBD.prepareStatement(Update);
 
-                sentencia.setString(1,unitats_prod);
-                sentencia.setInt(2, numero_prod);
-                sentencia.executeUpdate();
+                sentencia.setString(1, unitats_prod);
 
-                if (sentencia.executeUpdate() !=0){
-                    System.out.println("Producte actualitzat correctament");
-        
-                }else{
-                    System.out.println("Error al actualitzar el producte");
+                sentencia.setInt(2, numero_prod);
+
+                if(sentencia.executeUpdate() != 0){
+
+                    System.out.println("S'han afegit les unitats");
+
                 }
-            
 
             }
             buffer.close();
             reader.close();
-    
-    }
 
-    static void MoureProcessades(File directoriPen, File directoriPro, File fitxers) throws IOException{
-        
-        FileSystem sistemFicheros = FileSystems.getDefault();
-        Path origen = sistemFicheros.getPath(DIREC_PENDENTS + directoriPen.getName());
-        Path desti = sistemFicheros.getPath(DIREC_PROCESSADES +directoriPen.getName());
-        
-        Files.move(origen,desti,StandardCopyOption.REPLACE_EXISTING);
-        System.out.println("S' ha mogut a processat el fitxer: " + directoriPen.getName());
-    
-
-    }
-
-    static void GeneracioDeComandesEE () throws SQLException{
-
-        String consulta="SELECT * FROM producte WHERE STOCK<150 order by CODI_PORTA";
-
-        PreparedStatement ps = connexioBD.prepareStatement(consulta);
-
-        ResultSet rs=ps.executeQuery();
-
-        String proveidorAnt="";
-
-        while(rs.next()){
-            String proveidor=rs.getString("CODI_PORTA");
-            int codi=rs.getInt("CODI");
-            
-            if (!proveidorAnt.equals(proveidor)){
-        
-                System.out.println(codi + "Canvi de proveidor " + proveidor);
-
-            }else{
-                System.out.println("Estat erroni");
-            }
         }
-       
+
+    static void Moureaprocessades(File directoriPen) throws IOException{
+
+
+        FileSystem sistemFicheros=FileSystems.getDefault();
+        Path origen=sistemFicheros.getPath(DIREC_PENDENTS + directoriPen.getName());
+        Path desti=sistemFicheros.getPath(DIREC_PROCESSADES + directoriPen.getName());
+
+        //--------
+        //Moure Fitxers
+        //--------        
+        Files.move(origen, desti, StandardCopyOption.REPLACE_EXISTING);
+        System.out.println("S'ha mogut a processats el fixer: " + directoriPen.getName());
+
+
     }
 
-    static void GeneracioDeComandesV2 () throws SQLException, IOException{
+    static void GeneraciodeComandes() throws SQLException, IOException{
 
-        // Contadors
 
-        int contadorproveidor=0;
+        //--------
+        //Contadors
+        //--------
+        int contadorproveïdors=0;
         int contadorproductes=0;
 
-        
-        System.out.println("GENERACIO DE COMANDES");
-        
-        System.out.println("Creem el fitxer de comanda");
-
-        // PREPAREM CONSULTA
-
-
-        String consulta="SELECT * FROM producte WHERE STOCK<150 order by CODI_PORTA";
-
-        PreparedStatement ps = connexioBD.prepareStatement(consulta);
-
-        // LLANÇEM LA CONSULTA
-
-        ResultSet rs=ps.executeQuery();
-
-        // OBJ DATA 
-
+        //--------
+        //Obj Data
+        //--------
         LocalDate date = LocalDate.now();
-        
 
-        // VARIABLES DE CREACIO I ESTRUCTURA DE FITXERS 
+        //--------
+        //Variables de cracio i esciptura de fitxers
+        //--------
 
         FileWriter fw = null;
         BufferedWriter bf = null;
         PrintWriter escritor = null;
+     
+
+        System.out.println("Generació de Comandes");
+
+        System.out.println("Creeem el fitxer de comanda");
+
+        //--------
+        //Preparem Comanda SQL
+        //--------
+        String consulta="SELECT * FROM producte where STOCK<200 order by CODI_PORTA";
+
+        PreparedStatement ps = connexioBD.prepareStatement(consulta);
+
+        //--------
+        //Llançem Comanda SQL
+        //--------
+        ResultSet rs=ps.executeQuery();
+
+        
 
         if(rs.next()){
 
             String proveidorAct=rs.getString("CODI_PORTA");
-
-            int codi=rs.getInt("CODI");
-
-            System.out.println("El producte amb el codi: " + codi + " " +  "canvie el proveidor: " + proveidorAct);
-
-            // CREAR EL FITXER
-            
-             fw = new FileWriter("Projecte 1/files/Comanda/"+ proveidorAct + "_" + date + ".txt");
-             bf = new BufferedWriter(fw);
-             escritor = new PrintWriter(bf);
+      
         
+            //--------
+            //Creació del fitxer
+            //--------       
+            fw = new FileWriter("Projecte 1/files/Comandes/"+ proveidorAct + "_" + date +".txt");
+            bf = new BufferedWriter(fw);
+            escritor = new PrintWriter(bf);
+
+            escritor.println(COMANDA_STRING);
+
+            Aproveidors[contadorproveïdors]=rs.getString("CODI_PORTA");
 
             do{
-                if(proveidorAct!=rs.getString("CODI_PORTA")){
+                
+                //--------
+                //Condicional que comprova el proveïdor
+                //--------
+                if(!proveidorAct.equals(rs.getString("CODI_PORTA"))){
+
+                    Aproduct[contadorproveïdors]=contadorproductes;
+                    contadorproductes=0;
+                    contadorproveïdors++;
+                    Aproveidors[contadorproveïdors]=rs.getString("CODI_PORTA");
 
                     proveidorAct=rs.getString("CODI_PORTA");
+                    
                     escritor.close();
 
-                     fw = new FileWriter("Projecte 1/files/Comanda/"+ proveidorAct + "_" + date + ".txt");
-                     bf = new BufferedWriter(fw);
-                     escritor = new PrintWriter(bf);
+                    fw = new FileWriter("Projecte 1/files/Comandes/"+ proveidorAct + "_" + date +".txt");
+                    bf = new BufferedWriter(fw);
+                    escritor = new PrintWriter(bf);
 
-                     escritor.println(COMANDA_STRING);
-            
-
+                    escritor.println(COMANDA_STRING);
+                    
 
                 }
 
-                    escritor.println(" Codi: " + rs.getString("CODI")+ " Unitats: " + rs.getString("STOCK"));
+                escritor.println(" Codi: " + rs.getString("CODI") +"\tUnitats: "  + rs.getString("STOCK"));
 
-                
+                contadorproductes++;
 
-    
+                System.out.println("Comanda creada correctament");
+
+
+
             }while(rs.next());
 
-            escritor.close();
-
+                escritor.close();
+   
+                Aproduct[contadorproveïdors]=contadorproductes;
         }
-       
     }
 
     static void AnalisisComandes(){
+        for(int i=0;null!=Aproveidors[i];i++){
 
-        for(int i=0;i<Aproveidors.length;i++){
-            System.out.println("Proveidor " + Aproveidors[i] + " productes " + Aunitats[i]);
+        System.out.println("Proveidor " + Aproveidors[i] + " productes " + Aproduct[i]);
+
+        }
+        
+        int minim=Aproduct[0];
+
+        int max=Aproduct[0];
+
+        String maxper=Aproveidors[0];
+
+        String minper=Aproveidors[0];
+
+        double suma=0;
+
+                for(int A=0;A<Aproduct.length;A++){
+
+                    if(Aproduct[A]<minim){
+
+                        minim=Aproduct[A];
+                        minper=Aproveidors[A];
+
+                    }
+
+                    if(Aproduct[A]>max){
+
+                        max=Aproduct[A];
+                        maxper=Aproveidors[A];
+
+                    }
+
+                    suma=suma+Aproduct[A];
+                }
+
+
+            System.out.println("\n" + minper + " es el que te la menor demanda amb: " + minim);
+
+            System.out.println("\n"+ maxper + " es el que te la maxima demanda amb: " + max);
+
+            System.out.println("\nTenim una mitjana de demandes de:" + suma/Aproduct.length);
+
         }
 
     }
 
 
 
-}
 
 
- // String UpdateSel = "SELECT STOCK FROM teclats";
-// PreparedStatement sentencia = connexioBD.prepareStatement(UpdateSel);
 
-// String Update = "UPDATE teclats SET STOCK=STOCK+?";
-// PreparedStatement sentenciaUpdate = connexioBD.prepareStatement(Update);
 
 
 
