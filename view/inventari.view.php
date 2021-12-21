@@ -53,7 +53,6 @@
                         <th>Marca</th>
                         <th>Unitats</th>
                         <th>Preu</th>
-                        <th>Categoria</th>
                         <th>NIF Proveïdor</th>
                     </tr>
 
@@ -65,7 +64,6 @@
                         <td><?php echo $registre['Marca'];?></td>
                         <td><?php echo $registre['STOCK'];?></td>
                         <td><?php echo $registre['PREU'];?></td>
-                        <td><?php echo $registre['nom_categoria'];?></td>
                         <td><?php echo $registre['CODI_PORTA'];?></td>
                     </tr>
 
@@ -78,8 +76,7 @@
                 <div class="formulari">
                     <form action="" method="post">
 
-                        <label>Categoria:</label>
-                        <br>
+                        <label>Categoria</label>
 
                         <select name="cat">
                             <option value=""></option>
@@ -89,10 +86,8 @@
                             <option value="Gaming">Gaming</option>
                             <option value="Mediacenter">Mediacenter</option>
                         </select>
-                        <br>
 
-                        <label>Material:</label>
-                        <br>
+                        <label>Material</label>
 
                         <select name="mat">
                             <option value=""></option>
@@ -101,17 +96,14 @@
                             <option value="POM">POM</option>
                             <option value="PPS">PPS</option>
                         </select>
-                        <br>
 
-                        <label>Ordenar:</label>
-                        <br>
+                        <label>Ordenar</label>
 
                         <select name="ord">
                             <option value=""></option>
                             <option value="STOCK">STOCK</option>
                             <option value="CODI_PORTA">NIF</option>
                         </select>
-                        <br>
 
                         <button name="buscar" type="submit">Buscar</button>
                     </form> 

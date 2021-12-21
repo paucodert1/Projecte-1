@@ -42,7 +42,7 @@
 
 
 
-    $sql = "SELECT distinct P.CODI, P.NOM_PRODUCTE, C.NOM nom_categoria, P.Marca, P.STOCK, P.PREU, P.CODI_PORTA, F.CODI_MATERIAL
+    $sql = "SELECT distinct P.CODI, P.NOM_PRODUCTE,P.Marca, P.STOCK, P.PREU, P.CODI_PORTA, F.CODI_MATERIAL
     FROM producte P 
     JOIN organitzat O on O.CODI_PRODUCTE=P.CODI
     JOIN fets_amb F  on P.CODI=F.CODI_PRODUCTE
